@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 function FetchButton(props: { title: string, method?: "POST" | "DELETE", url: string, onData: (data: any) => void, children: React.ReactNode }) {
   return <button type="button" className="btn btn-primary" onClick={() => {
@@ -27,7 +27,7 @@ function DoubleRead() {
   return <>
     <h2> Double Read</h2>
     <FetchButton title='Double Read' url="/dbTest/doubleRead" onData={setValues}>Load</FetchButton>
-    {values.length == 0 ? null : <>
+    {values.length === 0 ? null : <>
       <h3> Values</h3>
       <ul>
         {values.map((f, idx) => <li key={idx}>{f}</li>)}
@@ -60,7 +60,7 @@ function App() {
         </label>
       </div>
 
-      {values.length == 0 ? null : <>
+      {values.length === 0 ? null : <>
         <h3> Values</h3>
         <ul>
           {values.map((f, idx) => <li key={idx}>Id: {f.id} Value: {f.value}</li>)}

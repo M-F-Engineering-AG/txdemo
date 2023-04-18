@@ -77,7 +77,8 @@ public class DbTestController : ControllerBase
             return new DummyDisposable();
         else
         {
-            context.Database.BeginTransaction(IsolationLevel.Serializable);
+            // context.Database.BeginTransaction(); // equals IsolationLevel.RepeatableRead
+            context.Database.BeginTransaction(IsolationLevel.ReadCommitted);
             return new CommitTransactionDisposable(context);
         }
     }
