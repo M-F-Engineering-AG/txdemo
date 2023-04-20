@@ -8,6 +8,9 @@ namespace txdemo.db;
 [Route("[controller]")]
 public class DbTestController : ControllerBase
 {
+
+    public static TxMode mode = TxMode.NONE;
+
     private ILogger<DbTestController> logger;
     private readonly ApplicationDbContext context;
 
@@ -37,6 +40,17 @@ public class DbTestController : ControllerBase
         context.SaveChanges();
         var result = context.Entities.OrderBy(x => x.Id).ToList();
         return result;
+    }
+
+    [HttpGet("mode")]
+    public string GetTxMode()
+    {
+        return "" + DbTestController.mode;
+    }
+    [HttpPost("mode")]
+    public void SetTxMode([FromQuery] TxMode mode)
+    {
+        DbTestController.mode = mode;
     }
 
     [HttpGet("doubleRead")]
@@ -73,14 +87,19 @@ public class DbTestController : ControllerBase
 
     private IDisposable magic()
     {
-        if (true)
-            return new DummyDisposable();
-        else
+        switch (mode)
         {
-            // context.Database.BeginTransaction(); // equals IsolationLevel.RepeatableRead
-            context.Database.BeginTransaction(IsolationLevel.ReadCommitted);
-            return new CommitTransactionDisposable(context);
+            case TxMode.REPEATABLE_READ:
+                context.Database.BeginTransaction(IsolationLevel.RepeatableRead);
+                break;
+            case TxMode.SERIALIZABLE:
+                context.Database.BeginTransaction(IsolationLevel.Serializable);
+                break;
+            case TxMode.NONE:
+            case TxMode.ACTION_FILTER:
+                return new DummyDisposable();
         }
+        return new CommitTransactionDisposable(context);
     }
 
 

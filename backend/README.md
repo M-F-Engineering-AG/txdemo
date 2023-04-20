@@ -10,7 +10,7 @@ See https://mariadb.com/kb/en/set-transaction/#isolation-level
 
 * READ UNCOMMITTED
 * READ COMMITTED
-* REPEATABLE READ / SNAPSHOT <= default
+* REPEATABLE READ <= default
 * SERIALIZABLE
 
 A consistent read means that InnoDB uses multi-versioning to present to a query a snapshot of the database at a point in time. The query sees the changes made by transactions that committed before that point in time, and no changes made by later or uncommitted transactions. The exception to this rule is that the query sees the changes made by earlier statements within the same transaction. 

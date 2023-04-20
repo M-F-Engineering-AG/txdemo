@@ -1,6 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
+const TxModes = ["NONE",
+  "REPEATABLE_READ",
+  "SERIALIZABLE",
+  "ACTION_FILTER"];
+
+function ModeChooser() {
+  const [mode, setMode] = useState("None");
+  useEffect(() => {
+    fetch("/dbTest/mode").then(r => r.text()).then(setMode);
+  }, [])
+  return <select className="form-select" onChange={e => fetch(`/dbTest/mode?mode=${e.target.value}`, { method: "POST" })}>
+    {TxModes.map(m =>
+      <option selected={m === mode} value={m} key={m}>{m}</option>)}
+  </select>
+}
 function FetchButton(props: { title: string, method?: "POST" | "DELETE", url: string, onData: (data: any) => void, children: React.ReactNode }) {
   return <button type="button" className="btn btn-primary" onClick={() => {
     const t = toast(props.title + "...", { isLoading: true })
@@ -67,6 +82,7 @@ function App() {
         </ul></>
       }
       <DoubleRead />
+      <ModeChooser />
     </div>
   );
 }

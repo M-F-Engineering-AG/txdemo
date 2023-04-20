@@ -24,10 +24,16 @@ public sealed class TransactionPerRequestFilter : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        if (DbTestController.mode != TxMode.ACTION_FILTER)
+        {
+            await next();
+            return;
+        }
+
         var isWriteRequest = IsWriteRequest(context);
 
         await using var transaction = await this.dbContext.Database.BeginTransactionAsync(
-            isWriteRequest ? IsolationLevel.Serializable : IsolationLevel.Snapshot);
+            isWriteRequest ? IsolationLevel.Serializable : IsolationLevel.RepeatableRead);
 
         var executedContext = await next();
 
